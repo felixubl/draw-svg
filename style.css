@@ -66,6 +66,19 @@ input[type="range"] {
   width: 36px;
 }
 
+#zoomValue {
+  font-size: 13px;
+  color: #444;
+  width: 48px;
+  text-align: center;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 button {
   padding: 6px 14px;
   border: 1px solid #333;
@@ -84,8 +97,10 @@ button:hover {
   border: 1px solid #ccc;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  max-width: 100%;
+  max-width: min(1100px, 92vw);
+  max-height: 70vh;
   overflow: auto;
+  display: flex;
 }
 
 #canvas {
