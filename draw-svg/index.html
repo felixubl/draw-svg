@@ -9,6 +9,7 @@
 <script src="../assets/theme.js"></script>
 <link rel="stylesheet" href="../assets/tokens.css">
 <link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/workshop-theme.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,17 +33,17 @@
   <div class="toolbar card">
     <div class="group">
       <label for="width">Width (px)</label>
-      <input class="field" type="number" id="width" min="50" max="4000" value="800">
+      <input class="field" type="number" id="width" min="1" max="4000" value="800">
       <label for="height">Height (px)</label>
-      <input class="field" type="number" id="height" min="50" max="4000" value="600">
+      <input class="field" type="number" id="height" min="1" max="4000" value="600">
       <button class="btn-ghost" id="resize">Set canvas</button>
     </div>
     <div class="group">
       <label for="color">Color</label>
       <input class="field swatch" type="color" id="color" value="#111111">
-      <label for="stroke">Stroke</label>
-      <input type="range" id="stroke" min="1" max="40" value="4">
-      <span class="tag readout" id="strokeValue">4px</span>
+      <label for="stroke">Brush</label>
+      <input type="range" id="stroke" min="1" max="40" value="1">
+      <span class="tag readout" id="strokeValue">1px</span>
     </div>
     <div class="group">
       <button class="btn-ghost icon-only" id="zoomOut" aria-label="Zoom out">&minus;</button>

@@ -9,6 +9,7 @@
 <script src="assets/theme.js"></script>
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/workshop-theme.css">
 <style>
   .tools {
     display: grid;
@@ -22,8 +23,8 @@
     transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
   }
   a.tool-card:hover {
-    box-shadow: var(--shadow-2);
-    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 var(--accent);
+    transform: translate(-2px, -4px) rotate(0deg);
   }
   .tool-card .tool-head {
     display: flex;
@@ -47,15 +48,6 @@
     font-size: 0.82rem;
     color: var(--accent);
   }
-  .more-soon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--faint);
-    font-size: 0.85rem;
-    min-height: 100%;
-  }
 </style>
 </head>
 <body>
@@ -66,6 +58,19 @@
       <p class="tagline">Small self-serve tools, built one at a time and left running. No accounts, no uploads that don't come back to you.</p>
     </div>
     <div class="row" style="flex-shrink: 0">
+      <a
+        class="icon-btn"
+        href="https://fubl.org"
+        target="_blank"
+        rel="noopener"
+        aria-label="Felix' personal site"
+        title="fubl.org"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/>
+        </svg>
+      </a>
       <a
         class="icon-btn"
         href="https://github.com/felixubl/workshop"
@@ -96,7 +101,7 @@
       <a class="card tool-card" href="draw-svg/">
         <div class="tool-head">
           <h3 class="font-slab">Draw SVG</h3>
-          <span class="badge">Live</span>
+          <span class="badge badge-live">Live</span>
         </div>
         <p>Set a pixel-sized canvas, draw freehand in any color, and export exactly what you drew as a real SVG file.</p>
         <span class="open">Open tool &rarr;</span>
@@ -105,13 +110,145 @@
       <div class="card prompt tool-card">
         <div class="tool-head">
           <h3 class="font-slab">PDF Toolkit</h3>
-          <span class="badge">Coming soon</span>
+          <span class="badge badge-soon">Coming soon</span>
         </div>
-        <p>Merge, split, compress, and convert PDFs, plus sign and black out (redact) pages, everything the average PDF site does. Runs fully client-side: your documents never leave your browser.</p>
+        <p>Merge, split, reorder, and compress PDFs, remove or extract pages, add page numbers, convert scanned pages to searchable text, and export pages as images &mdash; everything the average PDF site does, plus a "make this acceptable for upload" mode that fits a file to a target size and format. Runs fully client-side: your documents never leave your browser.</p>
       </div>
 
-      <div class="card prompt more-soon">
-        <p>More tools land here over time.</p>
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Metadata Cleaner</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>See exactly what's hiding in a file &mdash; camera EXIF and GPS in photos, author and edit history in PDFs, tracked changes in office documents &mdash; then strip it in one click. Works on images, PDFs, and most common document formats.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Image Toolkit</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Convert between PNG/JPEG/WebP/AVIF/HEIC, remove backgrounds, resize or pad without distorting, batch-rename, and generate favicons, app-icon sets, and social-media sizes from one source image. Also home to the pixel randomizer: every color gets swapped for a new, unrelated random one, consistently, so identical pixels always match but neighbors can end up worlds apart.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">SVG Toolkit</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Upload an existing SVG to keep editing it in Draw SVG, or reach for the deeper tools here: optimize and simplify paths, replace colors, convert strokes and text to paths, normalize the viewBox, and build sprites from a folder of icons. The flagship: "Fix my SVG," which auto-resolves clipping, missing viewBoxes, and oversized canvases in one pass.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">QR Code &amp; Barcodes</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Generate QR codes styled to match this site instead of plain black squares, still verified to scan cleanly, plus Wi-Fi, contact-card, and calendar-event QR codes, barcode generation and reading, and batch generation from a CSV for print-ready label sheets.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Random Number Generator</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Draw random numbers from uniform, normal, exponential, binomial, Poisson, and other distributions, in up to ten dimensions at once, with an optional seed for reproducible runs. Export the results as a table, CSV, or JSON.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Audio Toolkit</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Convert between MP3/WAV/M4A/OGG, trim, join, and normalize volume, remove silence, extract audio from video, and compress to a target file size. Also generates waveform images and strips audio metadata.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Video Toolkit</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Trim without re-encoding, strip audio, extract a frame, convert to and from GIF, compress to a target size, and fix aspect ratio or orientation. Plus subtitle conversion and timing shifts, and loop/boomerang clip generation.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Text &amp; Document Utilities</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Clean up pasted text: dedupe and sort lines, fix smart quotes and invisible Unicode characters, diff two files, and convert between Markdown, HTML, and plain text. Also formats and minifies JSON, YAML, CSS, and SQL, and counts tokens for common AI models.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">CSV &amp; Spreadsheet Toolkit</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>"Fix this CSV" detects encoding, delimiter, and broken rows automatically, plus merge, split, dedupe, and diff CSV files, convert to and from XLSX and JSON, reshape wide/long data, and pull a random sample of rows.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Developer Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>JSON/JWT/Base64/URL formatting and decoding, UUID and hash generation, a regex tester, cron explainer, and converters for cURL, TypeScript types, and Zod schemas &mdash; the everyday grab-bag of things a browser tab full of separate sites usually handles.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Font Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Convert TTF/OTF to WOFF2, preview every glyph, detect missing characters, subset a font down to the characters you actually use, and generate a ready-to-paste @font-face block.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Color &amp; Design Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Convert between HEX/RGB/HSL/OKLCH, check and auto-repair contrast, extract a palette from an image, build tint/shade scales, and preview a palette under different types of color-vision deficiency.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Archive &amp; File Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Zip and unzip files entirely in-browser, strip macOS junk files from an archive, find duplicates by hash, generate and verify checksums, and sanitize or bulk-rename a folder of filenames.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Geospatial Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>Convert between GPX, KML, and GeoJSON, extract or remove GPS data from photos, calculate distances, and simplify or merge GPX tracks.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Calendar &amp; Date Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>View and convert ICS files, merge calendars, shift event times, fix timezone mistakes, and generate a recurring-event ICS from a plain-language rule.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Email Tools</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>View EML files and their attachments, inspect headers with a plain-language SPF/DKIM/DMARC explanation, preview HTML emails at different widths, and strip tracking pixels from saved HTML.</p>
+      </div>
+
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">Odds &amp; Ends</h3>
+          <span class="badge badge-soon">Coming soon</span>
+        </div>
+        <p>The stuff that doesn't fit a category: webpage-to-PDF, an invoice photo to structured CSV, a slider to compare two image versions, a signature photo to a transparent PNG/SVG, and a passport-photo sheet at exact print dimensions.</p>
       </div>
     </div>
   </section>

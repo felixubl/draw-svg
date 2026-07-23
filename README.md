@@ -9,11 +9,13 @@ source so that claim is checkable rather than just asserted.
 
 - [Draw SVG](draw-svg/) — set a pixel-sized canvas, draw freehand in any
   color, export exactly what you drew as a real SVG file.
-- PDF Toolkit (coming soon) — merge, split, compress, convert, sign, and
-  redact PDFs, fully client-side.
 
-More tools land here over time, each in its own top-level folder linked from
-the homepage ([index.html](index.html)).
+The homepage ([index.html](index.html)) also lists a long line-up of
+"coming soon" tool categories — PDF, image, SVG, QR/barcode, a random number
+generator, audio, video, text/document, CSV/spreadsheet, developer, font,
+color, archive, geospatial, calendar, email, and more. Each new tool lands in
+its own top-level folder and swaps its card's badge from "Coming soon" to
+"Live" once it's built.
 
 ## Stack
 

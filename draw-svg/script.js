@@ -16,12 +16,15 @@ const gridOverlay = document.getElementById("gridOverlay");
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const MIN_ZOOM = 0.05;
-const MAX_ZOOM = 8;
+// High enough that even a tiny pixel-art canvas (e.g. 16x16) can be blown up
+// to fill the screen with huge per-pixel blocks. It's a px-per-logical-unit
+// multiplier, so 256 means one logical pixel can render up to 256px on screen.
+const MAX_ZOOM = 256;
 const ZOOM_STEP = 1.25;
 
 let drawing = false;
-let points = [];
-let currentPath = null;
+let lastCell = null;
+let paintedThisStroke = null;
 let logicalWidth = Math.max(1, parseInt(widthInput.value, 10) || 800);
 let logicalHeight = Math.max(1, parseInt(heightInput.value, 10) || 600);
 let zoom = 1;
@@ -31,11 +34,12 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-// Keeps the canvas from either overflowing the viewport (huge pixel sizes)
-// or rendering imperceptibly small (tiny pixel sizes) before any manual zoom.
+// Fit fills the drawing area: sized to the #canvasWrap content box (kept in
+// sync with its CSS max-width/max-height) so a small canvas scales all the way
+// up to fill it, and a large one scales down to stay fully visible.
 function computeFitZoom(w, h) {
-  const maxW = Math.min(window.innerWidth - 96, 1100);
-  const maxH = Math.min(window.innerHeight - 260, 640);
+  const maxW = Math.min(window.innerWidth * 0.92, 1100) - 8;
+  const maxH = window.innerHeight * 0.78 - 8;
   return clamp(Math.min(maxW / w, maxH / h), MIN_ZOOM, MAX_ZOOM);
 }
 
@@ -45,64 +49,124 @@ function applyZoom() {
   zoomValue.textContent = `${Math.round(zoom * 100)}%`;
 }
 
+// Brush size is in whole canvas pixels (grid cells), so a fixed 1-40 range
+// would let a small pixel-sized canvas be painted over by one brush stamp.
+// Cap it relative to the canvas so the brush never outsizes the pixels it's
+// meant to paint.
+function updateStrokeRange() {
+  const maxBrush = clamp(Math.floor(Math.min(logicalWidth, logicalHeight) / 2), 1, 40);
+  strokeInput.max = maxBrush;
+  if (Number(strokeInput.value) > maxBrush) {
+    strokeInput.value = maxBrush;
+  }
+  strokeValue.textContent = `${strokeInput.value}px`;
+}
+
 function applySize() {
   logicalWidth = Math.max(1, parseInt(widthInput.value, 10) || 800);
   logicalHeight = Math.max(1, parseInt(heightInput.value, 10) || 600);
   svg.setAttribute("viewBox", `0 0 ${logicalWidth} ${logicalHeight}`);
+  updateStrokeRange();
   zoom = computeFitZoom(logicalWidth, logicalHeight);
   manualZoom = false;
   applyZoom();
 }
 
-function getPoint(evt) {
+function getCell(evt) {
   const rect = svg.getBoundingClientRect();
   const scaleX = svg.viewBox.baseVal.width / rect.width;
   const scaleY = svg.viewBox.baseVal.height / rect.height;
+  const x = (evt.clientX - rect.left) * scaleX;
+  const y = (evt.clientY - rect.top) * scaleY;
   return {
-    x: (evt.clientX - rect.left) * scaleX,
-    y: (evt.clientY - rect.top) * scaleY,
+    x: clamp(Math.floor(x), 0, logicalWidth - 1),
+    y: clamp(Math.floor(y), 0, logicalHeight - 1),
   };
+}
+
+// This is a pixel-sized canvas: a cell is either painted or it isn't, so
+// drawing snaps to the grid and fills whole 1x1 cells instead of a smooth
+// vector stroke. The brush is a square stamp of cells centered on the
+// cursor's cell.
+function stampCell(cx, cy) {
+  const brush = Number(strokeInput.value);
+  const half = Math.floor(brush / 2);
+  for (let dx = 0; dx < brush; dx++) {
+    for (let dy = 0; dy < brush; dy++) {
+      paintCell(cx - half + dx, cy - half + dy);
+    }
+  }
+}
+
+function paintCell(x, y) {
+  if (x < 0 || y < 0 || x >= logicalWidth || y >= logicalHeight) return;
+  const key = `${x},${y}`;
+  if (paintedThisStroke.has(key)) return;
+  paintedThisStroke.add(key);
+  const rect = document.createElementNS(SVG_NS, "rect");
+  rect.setAttribute("x", x);
+  rect.setAttribute("y", y);
+  rect.setAttribute("width", 1);
+  rect.setAttribute("height", 1);
+  rect.setAttribute("fill", colorInput.value);
+  rect.classList.add("px");
+  // Insert just before the grid overlay (rather than appendChild, which would
+  // paint on top of it) so the grid always stays visible above painted
+  // pixels — it's a drawing aid, not part of the artwork, and shouldn't be
+  // coverable by paint.
+  svg.insertBefore(rect, gridOverlay);
+}
+
+// Bresenham between the last and current cell so a fast drag still stamps a
+// continuous line instead of leaving gaps between sampled pointer positions.
+function stampLine(x0, y0, x1, y1) {
+  let dx = Math.abs(x1 - x0);
+  let dy = -Math.abs(y1 - y0);
+  let sx = x0 < x1 ? 1 : -1;
+  let sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  while (true) {
+    stampCell(x0, y0);
+    if (x0 === x1 && y0 === y1) break;
+    const e2 = 2 * err;
+    if (e2 >= dy) {
+      err += dy;
+      x0 += sx;
+    }
+    if (e2 <= dx) {
+      err += dx;
+      y0 += sy;
+    }
+  }
 }
 
 function pointerDown(evt) {
   drawing = true;
-  points = [getPoint(evt)];
-  currentPath = document.createElementNS(SVG_NS, "path");
-  currentPath.setAttribute("fill", "none");
-  currentPath.setAttribute("stroke", colorInput.value);
-  currentPath.setAttribute("stroke-width", strokeInput.value);
-  currentPath.setAttribute("stroke-linecap", "round");
-  currentPath.setAttribute("stroke-linejoin", "round");
-  currentPath.setAttribute("d", pathData(points));
-  svg.appendChild(currentPath);
+  paintedThisStroke = new Set();
+  const cell = getCell(evt);
+  lastCell = cell;
+  stampCell(cell.x, cell.y);
   svg.setPointerCapture(evt.pointerId);
 }
 
 function pointerMove(evt) {
   if (!drawing) return;
-  points.push(getPoint(evt));
-  currentPath.setAttribute("d", pathData(points));
+  const cell = getCell(evt);
+  if (cell.x === lastCell.x && cell.y === lastCell.y) return;
+  stampLine(lastCell.x, lastCell.y, cell.x, cell.y);
+  lastCell = cell;
 }
 
 function pointerUp(evt) {
   if (!drawing) return;
   drawing = false;
-  currentPath = null;
+  lastCell = null;
+  paintedThisStroke = null;
   svg.releasePointerCapture(evt.pointerId);
 }
 
-function pathData(pts) {
-  if (pts.length === 0) return "";
-  const [first, ...rest] = pts;
-  let d = `M ${first.x.toFixed(2)} ${first.y.toFixed(2)}`;
-  for (const p of rest) {
-    d += ` L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`;
-  }
-  return d;
-}
-
 function clearCanvas() {
-  svg.querySelectorAll("path").forEach((p) => p.remove());
+  svg.querySelectorAll("rect.px").forEach((r) => r.remove());
 }
 
 function exportSvg() {

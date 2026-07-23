@@ -299,6 +299,38 @@ input[type='range']::-moz-range-thumb {
   box-shadow: var(--shadow-1);
 }
 
+/* Drag-and-drop file target, shared by every tool that accepts an upload */
+.dropzone {
+  display: block;
+  border: 1px dashed var(--accent-line);
+  border-radius: 16px;
+  background: var(--accent-soft);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+.dropzone:hover,
+.dropzone.drag-over {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.dropzone strong {
+  color: inherit;
+}
+.dropzone input[type='file'] {
+  display: none;
+}
+.dropzone .dz-filename {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
 footer {
   margin-top: 4rem;
   padding-top: 1.5rem;

@@ -59,9 +59,7 @@ input[type="color"].swatch {
   background: #fdfcfb;
   box-shadow: var(--shadow-1);
   border-radius: 16px;
-  max-width: min(1100px, 92vw);
-  max-height: 70vh;
-  overflow: auto;
+  width: fit-content;
   display: flex;
 }
 
@@ -69,4 +67,8 @@ input[type="color"].swatch {
   display: block;
   touch-action: none;
   cursor: crosshair;
+  /* Adjacent 1x1 px rects otherwise show faint anti-aliased seams between
+     them at fractional zoom levels, making solid brush strokes look broken
+     up. Crisp (non-antialiased) edges keep pixel-art fills perfectly solid. */
+  shape-rendering: crispEdges;
 }

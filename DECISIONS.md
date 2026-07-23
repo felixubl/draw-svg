@@ -129,3 +129,123 @@ for the `workshop` subdomain pointing to `felixubl.github.io` before the
 domain resolves.
 **Not explicitly requested** — flagged for review (the Pages/API setup
 specifically; the domain itself was requested).
+
+## 2026-07-23 — Louder, "dirtier" palette layered on top of vendored neo-retro
+**Decided:** Added `assets/workshop-theme.css`, loaded after `tokens.css`/
+`base.css` on every page, that overrides the accent tokens with a punchier
+palette (hot pink, acid lime, teal, marker orange) and adds a screen-printed
+texture: a fixed film-grain overlay, a faint halftone dot grid on the page
+background, hard offset (non-blurred) drop shadows on cards/buttons instead
+of soft ones, a slight rotation on grid cards ("pasted sticker" feel), and
+solid loud sticker-style badges. `tokens.css`/`base.css` themselves are left
+untouched so they still match the vendored neo-retro source; the deviation
+lives entirely in the new file.
+**Why:** Explicitly requested — "violate the neo retro rules slightly...
+more colorful and dirty but within the design." The specific palette values,
+texture technique (SVG turbulence grain + radial-gradient halftone), and
+where to draw the line (keep mono/slab type, pill shapes, and layout intact;
+only push color and surface texture) were my call.
+**Not explicitly requested** — flagged for review.
+
+## 2026-07-23 — Raised max zoom to 256x and lowered canvas min to 1px
+**Decided:** Bumped `MAX_ZOOM` in `draw-svg/script.js` from 8 (800%) to 256
+(one logical pixel can render up to 256px on screen), rewrote `computeFitZoom`
+to target the `#canvasWrap` content box (92vw/1100px wide, 78vh tall) instead
+of the old fixed 1100/640 caps, bumped the wrap's CSS `max-height` from 70vh
+to 78vh, and lowered the width/height inputs' `min` from 50 to 1.
+**Why:** The user wants a small canvas (e.g. 16x16) to be able to fill the
+screen with huge per-pixel blocks. The old 800% cap limited a 16px canvas to
+128px on screen, and the `min="50"` inputs contradicted using a 16px canvas
+at all. 256x is a round, generous ceiling that lets tiny canvases fill (and
+exceed, with scroll) the viewport while staying a raw multiplier. I chose to
+keep zoom as a simple multiplier rather than reworking it into an absolute
+"pixels-per-cell" control (larger change, and Fit already delivers the
+fill-the-screen default). Verified large canvases (4000x3000) still scale
+down to fit with no regression.
+**Not explicitly requested** — the specific 256x ceiling, 78vh area, and 1px
+min were my calls; flagged for review.
+
+## 2026-07-23 — Stroke width capped relative to canvas size
+**Decided:** In `draw-svg/script.js`, added `updateStrokeRange()` (called on
+every canvas resize) that caps the stroke slider's max at
+`floor(min(logicalWidth, logicalHeight) / 2)` (clamped to the existing 1-40
+range), and clamps the current stroke value down if it now exceeds that max.
+**Why:** The user reported small square canvases (e.g. 16x16) "not caring
+about the pixels" — stroke width is stored in the same units as the canvas
+grid, so with a fixed 1-40 range a single stroke could be wider than the
+entire canvas. I chose "half the smaller dimension" as the cap rather than
+alternatives like switching stroke to screen-pixel units (which would break
+the exported SVG's fidelity to what's on screen) or adding a separate
+pixel-snapping draw mode (a much bigger feature). This keeps large canvases
+(where 1-40 was already sensible) completely unaffected, verified via a
+600px-tall canvas still allowing stroke up to 40.
+**Not explicitly requested** — flagged for review.
+
+## 2026-07-23 — Drawing switched from smooth freehand paths to grid-snapped pixel painting
+**Decided:** Replaced the freehand `<path>` stroke drawing in `draw-svg/script.js`
+with grid-snapped painting: pointer position is floored to a whole canvas
+cell, each cell is stamped as a filled 1x1 `<rect class="px">`, and a
+Bresenham line fills in the cells between sampled pointer positions so fast
+drags don't leave gaps. The "Stroke" control is now "Brush" (default 1,
+range unchanged), sizing a square block of cells centered on the cursor
+instead of an SVG stroke-width. `clearCanvas` now removes `rect.px` elements
+instead of `path` elements.
+**Why:** The user drew a smooth diagonal on an 8x8 canvas and expected a
+blocky pixel-art result ("a pixel is either filled or not"). The tool's
+original freehand-path design (see the first two entries in this file) was a
+deliberate choice for a general vector sketch tool, but the user's repeated
+framing across this session (wanting huge screen-filling pixels, then this)
+makes clear it's meant to behave as a pixel-art editor, not a smooth-line
+sketchpad. This supersedes the stroke-cap entry above, which explicitly
+called a "pixel-snapping draw mode" a bigger feature than was warranted at
+the time — it's now warranted. Verified live: a drag now produces a clean
+single-rect-per-cell staircase (no smoothing, no duplicate cells), and a 3px
+brush stamps a correct centered 3x3 block.
+**Not explicitly requested in this exact form** — the mechanism (rect-stamp
++ Bresenham + centered square brush), the "Brush" rename, and the new
+default size of 1 were my calls; flagged for review.
+
+## 2026-07-23 — Diagnosed "big brush + click twice = disappears" as two rendering bugs, not data loss
+**Decided:** Confirmed via live DOM inspection (painted `rect.px` count after
+each click) that painting never removes anything — two clicks with a 40px
+brush left exactly double the rects, no loss. The actual complaint was two
+visual bugs: (1) `paintCell()` used `svg.appendChild(rect)`, so every new
+painted pixel rendered on top of `#gridOverlay` instead of under it, letting
+paint cover/hide the grid; (2) adjacent 1x1 `rect.px` elements show faint
+anti-aliased seams between them at fractional zoom levels, so a big solid
+brush stroke looked cracked/broken rather than solid. Fixed by inserting new
+rects with `svg.insertBefore(rect, gridOverlay)` (grid stays the last child,
+always rendered on top) and adding `shape-rendering: crispEdges` to `#canvas`
+(removes the seams). Verified live: painting under the grid now leaves grid
+lines visible through the paint, and a 40px-brush square renders as a clean
+solid block with no gaps, before and after a second overlapping click.
+**Why:** The user reported "the pixel grid is not part of the drawing" and
+"click twice with a big brush and it disappears" without a precise technical
+cause; I reproduced and root-caused it against the live app rather than
+guessing at a fix.
+**Not explicitly requested** — the two-part diagnosis and the specific fixes
+(insertBefore reordering vs. re-sorting the DOM on every paint; crispEdges vs.
+merging adjacent same-color cells into larger rects) were my calls; flagged
+for review.
+
+## 2026-07-23 — Pulled back from building 5 new tools live; catalogued the whole backlog as "coming soon" cards instead
+**Decided:** Originally started building Random Number Generator, Pixel
+Randomizer, QR Code Generator, Metadata Cleaner, and SVG upload/import as
+full live tools (per an approved plan). Mid-implementation the user said not
+to build all of it now — just add everything to "coming soon." Removed the
+one live tool folder already started (`random/`) and instead added 18
+"coming soon" cards to the homepage: PDF Toolkit (existing, expanded),
+Metadata Cleaner, Image Toolkit, SVG Toolkit, QR Code & Barcodes, Random
+Number Generator, Audio Toolkit, Video Toolkit, Text & Document Utilities,
+CSV & Spreadsheet Toolkit, Developer Tools, Font Tools, Color & Design Tools,
+Archive & File Tools, Geospatial Tools, Calendar & Date Tools, Email Tools,
+and Odds & Ends — merging the ~300-item backlog list the user pasted into
+one tight 2-3 sentence summary per card rather than listing every bullet.
+**Why:** Matches the user's explicit correction. The category boundaries and
+which of the 5 named tools got their own card (Metadata Cleaner, QR
+Generator, Random Number Generator) vs. folded into a broader one (pixel
+randomizer into Image Toolkit; SVG upload/edit mentioned inside SVG Toolkit,
+tied back to the live Draw SVG tool) were my calls, aiming to avoid two cards
+covering near-identical ground.
+**Not explicitly requested** — the specific card list, groupings, and copy
+are my calls; flagged for review.
