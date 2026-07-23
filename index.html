@@ -3,49 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draw SVG</title>
-<link rel="stylesheet" href="style.css">
+<title>Felix' Workshop</title>
+<meta name="description" content="Small self-serve tools, built one at a time. Everything runs in your browser — nothing you upload ever leaves it.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  .tools {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .tool-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  a.tool-card:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
+  }
+  .tool-card .tool-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .tool-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  .tool-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .tool-card .open {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: var(--accent);
+  }
+  .more-soon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--faint);
+    font-size: 0.85rem;
+    min-height: 100%;
+  }
+</style>
 </head>
 <body>
-<div class="toolbar">
-  <div class="group">
-    <label for="width">Width (px)</label>
-    <input type="number" id="width" min="50" max="4000" value="800">
-    <label for="height">Height (px)</label>
-    <input type="number" id="height" min="50" max="4000" value="600">
-    <button id="resize">Set canvas</button>
-  </div>
-  <div class="group">
-    <label for="color">Color</label>
-    <input type="color" id="color" value="#111111">
-    <label for="stroke">Stroke</label>
-    <input type="range" id="stroke" min="1" max="40" value="4">
-    <span id="strokeValue">4px</span>
-  </div>
-  <div class="group">
-    <button id="zoomOut" aria-label="Zoom out">&minus;</button>
-    <span id="zoomValue">100%</span>
-    <button id="zoomIn" aria-label="Zoom in">+</button>
-    <button id="zoomFit">Fit</button>
-    <label class="checkbox"><input type="checkbox" id="gridToggle"> Show pixel grid</label>
-  </div>
-  <div class="group">
-    <button id="clear">Clear</button>
-    <button id="export">Export SVG</button>
-  </div>
-</div>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="wordmark" href="./">Felix' <span class="accent">Workshop</span></a>
+      <p class="tagline">Small self-serve tools, built one at a time and left running. No accounts, no uploads that don't come back to you.</p>
+    </div>
+    <div class="row" style="flex-shrink: 0">
+      <a
+        class="icon-btn"
+        href="https://github.com/felixubl/workshop"
+        target="_blank"
+        rel="noopener"
+        aria-label="GitHub"
+        title="View source on GitHub"
+      >
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+        </svg>
+      </a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+        <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+        </svg>
+        <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>
+        </svg>
+      </button>
+    </div>
+  </header>
 
-<div id="canvasWrap">
-  <svg id="canvas" xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-    <defs>
-      <pattern id="pixelGrid" width="1" height="1" patternUnits="userSpaceOnUse">
-        <path d="M 1 0 L 0 0 0 1" fill="none" stroke="#3a3a3a" stroke-opacity="0.22" stroke-width="0.07"></path>
-      </pattern>
-    </defs>
-    <rect id="gridOverlay" x="0" y="0" width="100%" height="100%" fill="url(#pixelGrid)" pointer-events="none" style="display: none;"></rect>
-  </svg>
-</div>
+  <section>
+    <p class="section-label">Tools</p>
+    <div class="tools">
+      <a class="card tool-card" href="draw-svg/">
+        <div class="tool-head">
+          <h3 class="font-slab">Draw SVG</h3>
+          <span class="badge">Live</span>
+        </div>
+        <p>Set a pixel-sized canvas, draw freehand in any color, and export exactly what you drew as a real SVG file.</p>
+        <span class="open">Open tool &rarr;</span>
+      </a>
 
-<script src="script.js"></script>
+      <div class="card prompt tool-card">
+        <div class="tool-head">
+          <h3 class="font-slab">PDF Toolkit</h3>
+          <span class="badge">Coming soon</span>
+        </div>
+        <p>Merge, split, compress, and convert PDFs, plus sign and black out (redact) pages, everything the average PDF site does. Runs fully client-side: your documents never leave your browser.</p>
+      </div>
+
+      <div class="card prompt more-soon">
+        <p>More tools land here over time.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Every tool in this workshop runs entirely in your browser. Nothing you upload, draw, or edit is ever sent to a server, and this workshop is <a href="https://github.com/felixubl/workshop" target="_blank" rel="noopener">open source</a>, so you don't have to take my word for it.</p>
+  </footer>
+</div>
 </body>
 </html>

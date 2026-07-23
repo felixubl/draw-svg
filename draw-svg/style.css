@@ -1,0 +1,72 @@
+/* Tool-specific layout only — fonts, buttons, badges, and cards come from
+   ../assets/base.css. This file just arranges this tool's own controls. */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+input[type="number"].field {
+  width: 80px;
+}
+
+input[type="color"].swatch {
+  width: 40px;
+  height: 34px;
+  padding: 2px;
+}
+
+.toolbar input[type="range"] {
+  width: 130px;
+}
+
+.readout {
+  min-width: 44px;
+  text-align: center;
+}
+
+.btn-ghost.icon-only {
+  padding: 0.625rem 0.9rem;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* The drawing surface stays paper-light regardless of site theme: strokes
+   default to a dark pen color, which would vanish against a dark surface. */
+#canvasWrap {
+  border: 1px solid var(--line);
+  background: #fdfcfb;
+  box-shadow: var(--shadow-1);
+  border-radius: 16px;
+  max-width: min(1100px, 92vw);
+  max-height: 70vh;
+  overflow: auto;
+  display: flex;
+}
+
+#canvas {
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}

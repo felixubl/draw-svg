@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draw SVG — Felix' Workshop</title>
+<meta name="description" content="Set a pixel-sized canvas, draw freehand in any color, and export exactly what you drew as a real SVG file.">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<script src="../assets/theme.js"></script>
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back-link" href="../">&larr; Felix' Workshop</a>
+      <h1 class="font-slab" style="margin: 0.5rem 0 0; font-size: 1.5rem;">Draw SVG</h1>
+    </div>
+    <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+      <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+      </svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="toolbar card">
+    <div class="group">
+      <label for="width">Width (px)</label>
+      <input class="field" type="number" id="width" min="50" max="4000" value="800">
+      <label for="height">Height (px)</label>
+      <input class="field" type="number" id="height" min="50" max="4000" value="600">
+      <button class="btn-ghost" id="resize">Set canvas</button>
+    </div>
+    <div class="group">
+      <label for="color">Color</label>
+      <input class="field swatch" type="color" id="color" value="#111111">
+      <label for="stroke">Stroke</label>
+      <input type="range" id="stroke" min="1" max="40" value="4">
+      <span class="tag readout" id="strokeValue">4px</span>
+    </div>
+    <div class="group">
+      <button class="btn-ghost icon-only" id="zoomOut" aria-label="Zoom out">&minus;</button>
+      <span class="tag readout" id="zoomValue">100%</span>
+      <button class="btn-ghost icon-only" id="zoomIn" aria-label="Zoom in">+</button>
+      <button class="btn-ghost" id="zoomFit">Fit</button>
+      <label class="checkbox"><input type="checkbox" id="gridToggle"> Show pixel grid</label>
+    </div>
+    <div class="group">
+      <button class="btn-ghost" id="clear">Clear</button>
+      <button class="btn-primary" id="export">Export SVG</button>
+    </div>
+  </div>
+
+  <div id="canvasWrap">
+    <svg id="canvas" xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+      <defs>
+        <pattern id="pixelGrid" width="1" height="1" patternUnits="userSpaceOnUse">
+          <path d="M 1 0 L 0 0 0 1" fill="none" stroke="#3a3a3a" stroke-opacity="0.22" stroke-width="0.07"></path>
+        </pattern>
+      </defs>
+      <rect id="gridOverlay" x="0" y="0" width="100%" height="100%" fill="url(#pixelGrid)" pointer-events="none" style="display: none;"></rect>
+    </svg>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
